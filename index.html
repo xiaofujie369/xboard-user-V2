@@ -1,22 +1,158 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport"
-        content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+        content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
 
-  <title>Xboard</title>
+  <title>可云</title>
 
-  <!-- 加载 umi.js -->
+  <!-- umi.js：保持不变 -->
   <script type="module" crossorigin src="/assets/umi.js"></script>
+
+  <!-- 登录背景自定义变量（可不改） -->
+  <style>
+    :root {
+      --login-bg: url('/assets/login-bg.jpg');
+    }
+
+    /* 新人公告弹窗样式 */
+    .notice-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+    }
+
+    .notice-box {
+      width: 82%;
+      max-width: 380px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 18px;
+      text-align: center;
+      animation: ky-popup .3s ease;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.16);
+    }
+
+    .notice-close {
+      font-size: 22px;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 8px;
+    }
+
+    @keyframes ky-popup {
+      from { transform: scale(.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- 加载 env.example.js（确保文件名一致） -->
+  <!-- 加载环境配置（注意：按你项目来选择 env.js 或 env.example.js）-->
   <script src="./env.example.js"></script>
 
   <div id="app"></div>
+
+  <!-- ======================== 登录成功双弹窗逻辑 ======================== -->
+  <script>
+  (function () {
+    const DASHBOARD_PATH = "/dashboard"; // 登录后进入 dashboard 才开始弹窗
+
+    let popupInitialized = false;
+    let firstClosed = false;
+    let secondShown = false;
+
+    // ----------------- 创建弹窗 DOM -----------------
+    function createNoticePopup(onClose) {
+      const mask = document.createElement("div");
+      mask.className = "notice-mask";
+
+      mask.innerHTML = `
+        <div class="notice-box">
+          <div class="notice-close" id="noticeClose">×</div>
+
+          <h2>📢 新人必看公告</h2>
+
+          <p style="line-height:1.6;">欢迎来到可云，请务必阅读顶部公告栏信息。</p>
+          <p style="line-height:1.6;">请收藏最新地址：<b>shy521.com</b></p>
+          <p style="line-height:1.6;margin-bottom:18px;">
+            加入 TG 群组：<a href="https://t.me/ss_keyun" target="_blank">t.me/ss_keyun</a>
+          </p>
+        </div>
+      `;
+
+      document.body.appendChild(mask);
+
+      mask.querySelector("#noticeClose").onclick = () => {
+        mask.remove();
+        if (typeof onClose === "function") onClose();
+      };
+    }
+
+    // ----------------- 监听路由进入 dashboard -----------------
+    function watchDashboardRoute() {
+      setInterval(() => {
+        const hashPath = location.hash.replace("#", "");
+        if (!popupInitialized && hashPath.startsWith(DASHBOARD_PATH)) {
+          popupInitialized = true;
+          startTwoPopups();
+        }
+      }, 300);
+    }
+
+    // ----------------- 开始第一次 + 第二次弹窗 -----------------
+    function startTwoPopups() {
+      // 第一次：登录成功 1.5 秒后自动弹出
+      setTimeout(() => {
+        createNoticePopup(() => {
+          firstClosed = true;
+          startSecondPopupMonitor();
+        });
+      }, 1500);
+    }
+
+    // ----------------- 第二次弹窗点击监听 -----------------
+    function startSecondPopupMonitor() {
+      let monitorActive = true;
+
+      function clickHandler() {
+        if (!monitorActive || secondShown) return;
+
+        monitorActive = false;
+        document.removeEventListener("click", clickHandler, true);
+
+        // 随机延迟 3 ~ 10 秒
+        const delay = 3000 + Math.floor(Math.random() * 7000);
+
+        setTimeout(() => {
+          if (!secondShown) {
+            secondShown = true;
+            createNoticePopup();
+          }
+        }, delay);
+      }
+
+      // 监听任意点击
+      document.addEventListener("click", clickHandler, true);
+
+      // 监听有效期 60 秒
+      setTimeout(() => {
+        monitorActive = false;
+        document.removeEventListener("click", clickHandler, true);
+      }, 60000);
+    }
+
+    // 启动监听
+    watchDashboardRoute();
+  })();
+  </script>
 
 </body>
 </html>
