@@ -1,0 +1,39 @@
+/* ============ 商品折叠卡片 ============ */
+.plan-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.plan-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.plan-subtitle {
+  font-size: 14px;
+  margin-top: 4px;
+  color: #666;
+}
+
+.plan-toggle {
+  margin-top: 10px;
+  color: #409eff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 折叠内容区域 */
+.plan-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+  margin-top: 10px;
+}
+
+.plan-content.open {
+  padding-top: 10px;
+}
