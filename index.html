@@ -10,6 +10,9 @@
   <!-- umi.js：保持不变 -->
   <script type="module" crossorigin src="/assets/umi.js"></script>
 
+  <!-- 引入折叠功能样式 -->
+  <link rel="stylesheet" href="/assets/plan.css">
+
   <!-- 登录背景自定义变量（可不改） -->
   <style>
     :root {
@@ -55,10 +58,26 @@
 
 <body>
 
-  <!-- 加载环境配置（注意：按你项目来选择 env.js 或 env.example.js）-->
+  <!-- 环境配置 -->
   <script src="./env.example.js"></script>
 
   <div id="app"></div>
+
+  <!-- ======================== 折叠功能脚本 ======================== -->
+  <script>
+    function togglePlan(elem) {
+      const content = elem.previousElementSibling;
+      if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        elem.innerText = "展开详情";
+        content.classList.remove("open");
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+        elem.innerText = "收起详情";
+        content.classList.add("open");
+      }
+    }
+  </script>
 
   <!-- ======================== 登录成功双弹窗逻辑 ======================== -->
   <script>
@@ -69,7 +88,6 @@
     let firstClosed = false;
     let secondShown = false;
 
-    // ----------------- 创建弹窗 DOM -----------------
     function createNoticePopup(onClose) {
       const mask = document.createElement("div");
       mask.className = "notice-mask";
@@ -96,7 +114,6 @@
       };
     }
 
-    // ----------------- 监听路由进入 dashboard -----------------
     function watchDashboardRoute() {
       setInterval(() => {
         const hashPath = location.hash.replace("#", "");
@@ -107,9 +124,7 @@
       }, 300);
     }
 
-    // ----------------- 开始第一次 + 第二次弹窗 -----------------
     function startTwoPopups() {
-      // 第一次：登录成功 1.5 秒后自动弹出
       setTimeout(() => {
         createNoticePopup(() => {
           firstClosed = true;
@@ -118,7 +133,6 @@
       }, 1500);
     }
 
-    // ----------------- 第二次弹窗点击监听 -----------------
     function startSecondPopupMonitor() {
       let monitorActive = true;
 
@@ -128,7 +142,6 @@
         monitorActive = false;
         document.removeEventListener("click", clickHandler, true);
 
-        // 随机延迟 3 ~ 10 秒
         const delay = 3000 + Math.floor(Math.random() * 7000);
 
         setTimeout(() => {
@@ -139,17 +152,14 @@
         }, delay);
       }
 
-      // 监听任意点击
       document.addEventListener("click", clickHandler, true);
 
-      // 监听有效期 60 秒
       setTimeout(() => {
         monitorActive = false;
         document.removeEventListener("click", clickHandler, true);
       }, 60000);
     }
 
-    // 启动监听
     watchDashboardRoute();
   })();
   </script>
