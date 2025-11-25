@@ -1,1 +1,92 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"><title>Xboard</title><script type="module" crossorigin src="/assets/umi.js"></script></head><body><script src="./env.js"></script><div id="app"></div></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>可云 Premium</title>
+
+  <link rel="stylesheet" href="./assets/style.css" />
+  <script src="./env.js"></script>
+</head>
+
+<body>
+
+<!-- 商品示例（可无限扩展） -->
+<div class="plan">
+  <h2>Premium 套餐</h2>
+
+  <div class="fold-content" id="planContent">
+    <p>- 最高速优质节点（HK/JP/TW/US）</p>
+    <p>- 解锁流媒体（常用平台）</p>
+    <p>- GPT 优化线路（低延迟）</p>
+    <p>- 不限速、不限设备数（合理使用）</p>
+  </div>
+
+  <div class="fold-toggle" onclick="toggleFold()">展开详情</div>
+</div>
+
+
+<script>
+// ----------------------- 商品折叠逻辑 ------------------------
+function toggleFold() {
+  const content = document.getElementById('planContent')
+  if (content.style.maxHeight) {
+    content.style.maxHeight = null
+    event.target.innerText = "展开详情"
+  } else {
+    content.style.maxHeight = content.scrollHeight + "px"
+    event.target.innerText = "收起详情"
+  }
+}
+
+
+// ----------------------- 弹窗逻辑（双弹窗机制） ------------------------
+;(function () {
+  let firstPopup = false
+  let secondPopup = false
+
+  function createPopup() {
+    const dom = document.createElement("div")
+    dom.className = "popup-mask"
+    dom.innerHTML = `
+      <div class="popup-box">
+        <div class="popup-close" onclick="this.parentNode.parentNode.remove()">×</div>
+        <h2>📢 新人必看公告</h2>
+
+        <p style="line-height:1.6;">欢迎来到可云，请务必阅读顶部公告栏信息。</p>
+        <p style="line-height:1.6;">请收藏最新地址：<b>shy521.com</b></p>
+        <p style="line-height:1.6;margin-bottom:18px;">
+          加入 TG 群组：<a href="https://t.me/ss_keyun" target="_blank">t.me/ss_keyun</a>
+        </p>
+      </div>
+    `
+    document.body.appendChild(dom)
+  }
+
+  // 登录成功后立即弹第一次
+  setTimeout(() => {
+    if (!firstPopup) {
+      firstPopup = true
+      createPopup()
+    }
+  }, 1500)
+
+  // 点击后触发下一轮随机弹窗（3～10秒）
+  setTimeout(() => {
+    document.addEventListener("click", () => {
+      if (secondPopup) return
+      const delay = Math.floor(Math.random() * 7000) + 3000
+      setTimeout(() => {
+        if (!secondPopup) {
+          secondPopup = true
+          createPopup()
+        }
+      }, delay)
+    }, { once: true })
+  }, 3000)
+})();
+</script>
+
+</body>
+</html>
