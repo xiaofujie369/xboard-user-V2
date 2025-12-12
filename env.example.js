@@ -11,10 +11,9 @@ window.settings = {
   background_url: '',
   logo: '',
 
-  // ========== Turnstile 验证配置 ==========
   captcha: {
-    enable: true,                    // 开启验证码
-    type: 'turnstile',               // 使用 Cloudflare Turnstile
-    site_key: '0x4AAAAAACD79ChAaarA3mbd', // ✅ 这里只能写站点密钥（public site key）
+    enable: true,
+    type: 'turnstile',
+    site_key: '0x4AAAAAACD79ChAaarA3mbd',
   },
 };
