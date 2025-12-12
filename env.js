@@ -1,5 +1,5 @@
 // API 地址（指向 XBoard 后端）
-window.routerBase = 'https://ss.shy521.com';
+window.routerBase = 'https://ss.shy521.com/';
 
 // 全局站点设置
 window.settings = {
