@@ -1,4 +1,4 @@
-// API地址（线上环境）
+// API 地址（指向 XBoard 后端）
 window.routerBase = 'https://ss.shy521.com/';
 
 // 全局站点设置
@@ -13,8 +13,8 @@ window.settings = {
 
   // ========== Turnstile 验证配置 ==========
   captcha: {
-    enable: true,                // 是否启用验证码
-    type: 'turnstile',           // 可选值：'turnstile' 或 'recaptcha-v3'
-    site_key: '0x4AAAAAACD79ChAaarA3mbd',  // 你的 Cloudflare Turnstile 站点密钥
+    enable: true,                    // 开启验证码
+    type: 'turnstile',               // 使用 Cloudflare Turnstile
+    site_key: '0x4AAAAAACD79ChAaarA3mbd', // ✅ 这里只能写站点密钥（public site key）
   },
 };
