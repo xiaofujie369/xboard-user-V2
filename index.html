@@ -7,7 +7,7 @@
 
   <title>可云</title>
 
-  <!-- 环境配置：先加载 env.js，提供 routerBase 和 settings -->
+  <!-- 环境配置：提供 routerBase 和 settings -->
   <script src="./env.js"></script>
 
   <!-- umi.js：保持不变 -->
@@ -62,7 +62,7 @@
 <body>
   <div id="app"></div>
 
-  <!-- ======================== 折叠功能函数 ======================== -->
+  <!-- 折叠功能函数 -->
   <script>
     function togglePlan(elem) {
       const content = elem.previousElementSibling;
@@ -78,45 +78,39 @@
     }
   </script>
 
-  <!-- ======================== 自动注入折叠卡片到 /plan ======================== -->
+  <!-- 自动注入折叠卡片到 /plan -->
   <script>
   (function () {
-
       function injectPlanCard() {
         const hash = location.hash.replace('#', '');
-
-        // 在 /plan 页面才注入
         if (hash.startsWith('/plan')) {
+          const container =
+            document.querySelector('.ant-pro-page-container-children-container') ||
+            document.querySelector('.ant-pro-children-content');
 
-            // 找 umi.js 渲染的真实容器
-            const container =
-              document.querySelector('.ant-pro-page-container-children-container') ||
-              document.querySelector('.ant-pro-children-content');
+          if (!container) {
+            return setTimeout(injectPlanCard, 300);
+          }
 
-            if (!container) {
-              return setTimeout(injectPlanCard, 300);
-            }
+          if (document.getElementById('ky-plan-card')) return;
 
-            // 防止重复插入
-            if (document.getElementById('ky-plan-card')) return;
+          const html = `
+            <div id="ky-plan-card" class="plan-card">
+              <div class="plan-title">Premium 套餐</div>
+              <div class="plan-subtitle">高速 / 套餐说明 / GPT 优化</div>
 
-            const html = `
-              <div id="ky-plan-card" class="plan-card">
-                <div class="plan-title">Premium 套餐</div>
-                <div class="plan-subtitle">高速 / 套餐说明 / GPT 优化</div>
-
-                <div class="plan-content">
-                  <p>- 解锁流媒体（Netflix / Disney+）</p>
-                  <p>- GPT 专线，低延迟高稳定</p>
-                  <p>- 不限速、不限设备数（合理使用）</p>
-                  <p>- 含 HK / JP / TW / US 节点池</p>
-                </div>
-
-                <div class="plan-toggle" onclick="togglePlan(this)">展开详情</div>
+              <div class="plan-content">
+                <p>- 解锁流媒体（Netflix / Disney+）</p>
+                <p>- GPT 专线，低延迟高稳定</p>
+                <p>- 不限速、不限设备数（合理使用）</p>
+                <p>- 含 HK / JP / TW / US 节点池</p>
               </div>
-            `;
 
-            container.insertAdjacentHTML('afterbegin', html);
+              <div class="plan-toggle" onclick="togglePlan(this)">展开详情</div>
+            </div>
+          `;
+
+          container.insertAdjacentHTML('afterbegin', html);
         }
 
         setTimeout(injectPlanCard, 500);
@@ -126,10 +120,10 @@
   })();
   </script>
 
-  <!-- ======================== 登录成功双弹窗逻辑 ======================== -->
+  <!-- 登录成功双弹窗逻辑 -->
   <script>
   (function () {
-    const DASHBOARD_PATH = "/dashboard"; // 登录后进入 dashboard 才开始弹窗
+    const DASHBOARD_PATH = "/dashboard";
 
     let popupInitialized = false;
     let firstClosed = false;
