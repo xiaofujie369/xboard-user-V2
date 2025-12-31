@@ -16,44 +16,11 @@
   <link rel="stylesheet" href="/assets/plan.css">
 
   <style>
-    :root {
-      --login-bg: url('/assets/login-bg.jpg');
-    }
-
-    /* 新人公告弹窗样式 */
-    .notice-mask {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(4px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999999;
-    }
-
-    .notice-box {
-      width: 82%;
-      max-width: 380px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 18px;
-      text-align: center;
-      animation: ky-popup .3s ease;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.16);
-    }
-
-    .notice-close {
-      font-size: 22px;
-      cursor: pointer;
-      text-align: right;
-      margin-bottom: 8px;
-    }
-
-    @keyframes ky-popup {
-      from { transform: scale(.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+    :root { --login-bg: url('/assets/login-bg.jpg'); }
+    .notice-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 999999; }
+    .notice-box { width: 82%; max-width: 380px; background: #fff; padding: 20px; border-radius: 18px; text-align: center; animation: ky-popup .3s ease; box-shadow: 0 12px 35px rgba(0,0,0,0.16); }
+    .notice-close { font-size: 22px; cursor: pointer; text-align: right; margin-bottom: 8px; }
+    @keyframes ky-popup { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 
@@ -80,38 +47,25 @@
       function injectPlanCard() {
         const hash = location.hash.replace('#', '');
         if (hash.startsWith('/plan')) {
-          const container =
-            document.querySelector('.ant-pro-page-container-children-container') ||
-            document.querySelector('.ant-pro-children-content');
-
-          if (!container) {
-            return setTimeout(injectPlanCard, 300);
-          }
-
+          const container = document.querySelector('.ant-pro-page-container-children-container') || document.querySelector('.ant-pro-children-content');
+          if (!container) return setTimeout(injectPlanCard, 300);
           if (document.getElementById('ky-plan-card')) return;
-
           const html = `
             <div id="ky-plan-card" class="plan-card">
               <div class="plan-title">Premium 套餐</div>
               <div class="plan-subtitle">高速 / 套餐说明 / GPT 优化</div>
-
               <div class="plan-content">
                 <p>- 解锁流媒体（Netflix / Disney+）</p>
                 <p>- GPT 专线，低延迟高稳定</p>
                 <p>- 不限速、不限设备数（合理使用）</p>
                 <p>- 含 HK / JP / TW / US 节点池</p>
               </div>
-
               <div class="plan-toggle" onclick="togglePlan(this)">展开详情</div>
-            </div>
-          `;
-
+            </div>`;
           container.insertAdjacentHTML('afterbegin', html);
         }
-
         setTimeout(injectPlanCard, 500);
       }
-
       injectPlanCard();
   })();
   </script>
@@ -119,86 +73,31 @@
   <script>
   (function () {
     const DASHBOARD_PATH = "/dashboard";
-
     let popupInitialized = false;
-    let firstClosed = false;
-    let secondShown = false;
-
     function createNoticePopup(onClose) {
       const mask = document.createElement("div");
       mask.className = "notice-mask";
-
       mask.innerHTML = `
         <div class="notice-box">
           <div class="notice-close" id="noticeClose">×</div>
-
           <h2>📢 新人必看公告</h2>
-
           <p style="line-height:1.6;">欢迎来到可云，请务必阅读顶部公告栏信息。</p>
           <p style="line-height:1.6;">请收藏最新地址：<b>shy521.com</b></p>
-          <p style="line-height:1.6;margin-bottom:18px;">
-            加入 TG 群组：<a href="https://t.me/ss_keyun" target="_blank">t.me/ss_keyun</a>
-          </p>
-        </div>
-      `;
-
+          <p style="line-height:1.6;margin-bottom:18px;">加入 TG 群组：<a href="https://t.me/ss_keyun" target="_blank">t.me/ss_keyun</a></p>
+        </div>`;
       document.body.appendChild(mask);
-
       mask.querySelector("#noticeClose").onclick = () => {
         mask.remove();
         if (typeof onClose === "function") onClose();
       };
     }
-
-    function watchDashboardRoute() {
-      setInterval(() => {
-        const hashPath = location.hash.replace("#", "");
-        if (!popupInitialized && hashPath.startsWith(DASHBOARD_PATH)) {
-          popupInitialized = true;
-          startTwoPopups();
-        }
-      }, 300);
-    }
-
-    function startTwoPopups() {
-      setTimeout(() => {
-        createNoticePopup(() => {
-          firstClosed = true;
-          startSecondPopupMonitor();
-        });
-      }, 1500);
-    }
-
-    function startSecondPopupMonitor() {
-      let monitorActive = true;
-
-      function clickHandler() {
-        if (!monitorActive || secondShown) return;
-
-        monitorActive = false;
-        document.removeEventListener("click", clickHandler, true);
-
-        const delay = 3000 + Math.floor(Math.random() * 7000);
-
-        setTimeout(() => {
-          if (!secondShown) {
-            secondShown = true;
-            createNoticePopup();
-          }
-        }, delay);
+    setInterval(() => {
+      if (!popupInitialized && location.hash.replace("#", "").startsWith(DASHBOARD_PATH)) {
+        popupInitialized = true;
+        setTimeout(() => createNoticePopup(), 1500);
       }
-
-      document.addEventListener("click", clickHandler, true);
-
-      setTimeout(() => {
-        monitorActive = false;
-        document.removeEventListener("click", clickHandler, true);
-      }, 60000);
-    }
-
-    watchDashboardRoute();
+    }, 300);
   })();
   </script>
-
 </body>
 </html>
